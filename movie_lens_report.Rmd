@@ -1,4 +1,10 @@
 ---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+---
 title: "MovieLens Project"
 author: "Daniel Dalnekoff"
 date: "10/20/2020"
@@ -8,7 +14,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+
 ```
 
 ## Overview
@@ -52,13 +59,10 @@ I asked some questions to understand what the edx dataset looked like, and retur
 
 ##### Ratings Histogram  
 
-<<<<<<< HEAD
 ![](ratings_histogram.png)
-=======
-##### Ratings Historgram  
 
-![Ratings Histogram](ratings_histogram.png)
->>>>>>> 8360931598045b0743e672e40bef00d63959a4ad
+
+
 
 To help increase the accuracy of our modeling and the results of our recommendation engine, I opted to add some additional features to the data that might be leveraged by our algorithm.  This included adding columns to the data to represent the component datetime pieces of the timestamp.  I did this by first converting the epoch format datetime value to an easy to read (for a person) date time and also creating columns to represent the review year, month, day (as in the day of the month), weekday (Monday, Tuesday, etc), and hour of review.  From our initial glance at the title field, we learned that the release year of the movie was in fact part of the title – for example movieId 122 = “Boomerang (1992)” was released in 1992.  As with the components of the review datetime, I suspected that the year the movie was released might potentially impact the rating and decided to split this out as an additional feature.  The following code was used to take the substring of the title which fell between the parenthesis and populate a new feature, year_extract with that information:
 
@@ -127,7 +131,6 @@ plot(movie_avgs$movieId, movie_avgs$mean_rating)
 ```
 
 
-<<<<<<< HEAD
 
 &nbsp;
 
@@ -136,11 +139,8 @@ plot(movie_avgs$movieId, movie_avgs$mean_rating)
 ##### Mean Rating by Movie
 
 ![](plot_ratings_by_movie.png)
-=======
-##### Mean Rating by Movie
 
-![Movie Ratings Plot](plot_ratings_by_movie.png)
->>>>>>> 8360931598045b0743e672e40bef00d63959a4ad
+
 
 The next step was to incorporate each film’s score from this summary back into the original estimate that used just the population overall mean. The predicted rating for a movie became the population mean (mu) + the effect of that individual film’s overall ratings.  The resulting impact in the model’s RMSE can be evaluated with the following code:
 
@@ -171,11 +171,8 @@ We can observe this user bias by visualizing the mean rating by user.  While we 
 
 ##### Mean Rating by User ID
 
-<<<<<<< HEAD
 ![](plot_ratings_by_user.png)
-=======
-![Plot of mean ratings by user ID](plot_ratings_by_user.png)
->>>>>>> 8360931598045b0743e672e40bef00d63959a4ad
+
 
 
 Now that we have both a movie and user bias, we can incorporate these into our algorithm and evaluate by following the same approach as with only the movie effect.  In this instance though, we are basing our prediction off of three components: mu (the population mean), b_i (the effect on rating of that individual film), and b_u (the effect on the rating of that specific user) via the following code:

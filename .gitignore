@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+ml-10M100K
+movie_lens_report_cache
