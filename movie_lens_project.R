@@ -1,4 +1,4 @@
-#HarvardX: PH125.9x Daa Science Capstone
+#HarvardX: PH125.9x Data Science Capstone
 #MovieLens R Code
 #ddalnekoff 
 #movieLens
@@ -222,6 +222,7 @@ movie_avgs <- edx %>%
   summarize(b_i = mean(rating - mu), mean_rating = mean(rating))
 
 plot(movie_avgs$movieId, movie_avgs$mean_rating)
+smoothScatter(movie_avgs$movieId, movie_avgs$mean_rating)
 
 #let's calculate the accuracy improvement by just adjusting for the movie effect
 predicted_ratings <- mu + validation %>% 
@@ -828,6 +829,8 @@ user_avgs_reg_final <- edx %>%
   group_by(userId) %>%
   summarize(b_u = sum(rating - b_i - mu)/(n()+final_lambda))
 #clean na
+#
+
 user_avgs_reg_final[is.na(user_avgs_reg_final)] <- 0
 
 #movie year effect with regularization
@@ -837,7 +840,7 @@ movie_year_reg_final <- edx %>%
   group_by(year_extract) %>% 
   summarize(b_y = sum(rating - b_i - b_u - mu )/(n()+final_lambda))
 #clean na
-movie_year_reg_final[is.na(movie_year_reg_final)] <- 0
+#movie_year_reg_final[is.na(movie_year_reg_final)] <- 0
 
 
 #age at review effect with regularization
@@ -848,7 +851,7 @@ review_age_reg_final <- edx %>%
   group_by(age_at_review) %>% 
   summarise(b_a = sum(rating - b_i - b_u - b_y - mu)/(n()+final_lambda))
 #clean na
-review_age_reg_final[is.na(review_age_reg_final)] <- 0
+#review_age_reg_final[is.na(review_age_reg_final)] <- 0
 
 #genres effect with regularization
 genre_group_reg_final <- edx  %>% 
@@ -859,7 +862,7 @@ genre_group_reg_final <- edx  %>%
   group_by(genres) %>% 
   summarize(b_g = sum(rating -  b_i - b_u - b_y - b_a - mu)/(n()+final_lambda))
 #clean na
-genre_group_reg_final[is.na(genre_group_reg_final)] <- 0
+#genre_group_reg_final[is.na(genre_group_reg_final)] <- 0
 
 #review day effect with regularization
 day_group_reg_final <- edx  %>% 
@@ -871,7 +874,7 @@ day_group_reg_final <- edx  %>%
   group_by(review_day) %>% 
   summarize(b_dy = sum(rating - b_i - b_u - b_y - b_a - b_g - mu)/(n()+final_lambda))
 #clean na
-day_group_reg_final[is.na(day_group_reg_final)] <- 0
+#day_group_reg_final[is.na(day_group_reg_final)] <- 0
 
 #review month effect with regularization
 month_group_reg_final <- edx %>% 
@@ -884,7 +887,7 @@ month_group_reg_final <- edx %>%
   group_by(review_month) %>% 
   summarize(b_m = sum(rating - b_i - b_u - b_y - b_a - b_g - b_dy - mu)/(n()+final_lambda))
 #clean na
-month_group_reg_final[is.na(month_group_reg_final)] <- 0
+#month_group_reg_final[is.na(month_group_reg_final)] <- 0
 
 
 #review hour effect with regularization
@@ -899,7 +902,7 @@ time_group_reg_final <- edx  %>%
   group_by(review_hour) %>%
   summarize(b_h = sum(rating - b_i - b_u - b_y - b_a - b_g - b_dy - b_m - mu )/(n()+final_lambda))
 #clean na
-time_group_reg_final[is.na(time_group_reg_final)] <- 0
+#time_group_reg_final[is.na(time_group_reg_final)] <- 0
 
 #review year effect with regularization
 year_group_reg_final <- edx  %>% 
@@ -914,7 +917,7 @@ year_group_reg_final <- edx  %>%
   group_by(review_year) %>%
   summarize(b_ry = sum(rating - b_i - b_u - b_y - b_a - b_g - b_dy - b_m - b_h - mu )/(n()+final_lambda))
 #clean na
-year_group_reg_final[is.na(year_group_reg_final)] <- 0
+#year_group_reg_final[is.na(year_group_reg_final)] <- 0
 
 #day of month effect with regularization
 mDay_group_reg_final <- edx %>%
@@ -930,7 +933,7 @@ mDay_group_reg_final <- edx %>%
   group_by(review_mday) %>%
   summarize(b_mdy = sum(rating - b_i - b_u - b_y - b_a - b_g - b_dy - b_m - b_h - b_ry - mu )/(n()+final_lambda))
 #clean na
-mDay_group_reg_final[is.na(mDay_group_reg_final)] <- 0
+#mDay_group_reg_final[is.na(mDay_group_reg_final)] <- 0
 
 predicted_ratings_reg_final <- validation %>% 
   left_join(movie_avgs_reg_final, by = 'movieId') %>% 
@@ -949,13 +952,27 @@ predicted_ratings_reg_final[is.na(predicted_ratings_reg_final)] <- 0
 
 #add prediction
 predicted_ratings_reg_final <- predicted_ratings_reg_final %>%
-  mutate(pred = mu +  b_i + b_u + b_y + b_a + b_g + b_dy + b_m +  b_h + b_ry + b_mdy) %>% 
-  pull(pred)
+  mutate(pred = mu +  b_i + b_u + b_y + b_a + b_g + b_dy + b_m +  b_h + b_ry + b_mdy)
 
+#let's take a quick look at the final preds and mean values of our effects
+head(predicted_ratings_reg_final)
+
+mean(predicted_ratings_reg_final$b_i)
+mean(predicted_ratings_reg_final$b_y)
+mean(predicted_ratings_reg_final$b_g)
+mean(predicted_ratings_reg_final$b_u)
+mean(predicted_ratings_reg_final$b_a)
+mean(predicted_ratings_reg_final$b_dy)
+mean(predicted_ratings_reg_final$b_m)
+mean(predicted_ratings_reg_final$b_h)
+mean(predicted_ratings_reg_final$b_ry)
+mean(predicted_ratings_reg_final$b_mdy)
+
+final_preds <- predicted_ratings_reg_final %>% pull(pred)
 
 
 #re-ran the model with regularization with the lambda value from above
-RMSE(predicted_ratings_reg_final, validation$rating)
+RMSE(final_preds, validation$rating)
 #this is our final model accuracy
 .8638
 
@@ -964,5 +981,5 @@ RMSE(predicted_ratings_reg_final, validation$rating)
 #.8638128
 #this satisfies the score we are looking to be below for the scope of this machine learning exercise
 
-
+head(predicted_ratings_reg_final)
 
